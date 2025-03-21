@@ -6,6 +6,18 @@ import { useState } from 'react';
 export default function App() {
   let [cep, setCep] = useState('');
   let [dados, setDados] = useState([]);
+  
+  const [expanded, setExpanded] = useState(false);
+  const handlePress = () =>{ setExpanded(!expanded)};
+  const [selectedValue, setSelectedValue] = useState(null);
+
+
+   
+  const handleItemPress = (value) => {
+    setSelectedValue(value);
+    setExpanded(false); 
+  };
+
 
   const BuscaCep = (xcep) => {
     let url = `https://viacep.com.br/ws/${xcep}/json/`;
@@ -18,8 +30,10 @@ export default function App() {
         (dados) => {
           console.log(dados);
           setDados(dados);
+          setSelectedValue(dados.uf);
         }
       ).catch(
+        // erro a ser tratado modal
         (x) => { console.log(x) }
       )
   }
@@ -66,14 +80,22 @@ export default function App() {
         value={dados.localidade}
         onChangeText={(value) => { setDados(dados.localidade = value) }}
       />
-      <List.Section title="Estado">
-        <List.Accordion  title="Selecione o Estado">
-          <List.Item title="estado 1" />
-          <List.Item title="estado 2" />
-          <List.Item title="estado 3" />
-          <List.Item title="estado 4" />
+      <List.Section title="Estado" >
+        <List.Accordion  
+        title={ selectedValue == null ? 'Selecione o Estado': selectedValue  } 
+          expanded ={expanded}
+          onPress={handlePress}
+
+
+        >
+          <List.Item title="AC"  onPress={()=> {handleItemPress('AC')}}/>
+          <List.Item title="SP" onPress={()=> {handleItemPress('SP')}} />
+          <List.Item title="RJ"  onPress={()=> {handleItemPress('RJ')}}/>
+          <List.Item title="BH" onPress={()=> {handleItemPress('BH')}} />
         </List.Accordion>
       </List.Section>
+
+      
 
       <StatusBar style="auto" />
     </View>
